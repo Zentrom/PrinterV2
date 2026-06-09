@@ -1,3 +1,8 @@
+- setupLocal.sh
+- setupLocal2.sh
+- ./scripts/setup_local.sh
+
+
 # MoneyPrinter V2
 
 Sponsored by Post Bridge

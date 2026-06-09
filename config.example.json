@@ -1,7 +1,7 @@
 {
   "verbose": true,
   "firefox_profile": "",
-  "headless": false,
+  "headless": true,
   "ollama_base_url": "http://127.0.0.1:11434",
   "ollama_model": "",
   "twitter_language": "English",
