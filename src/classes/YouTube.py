@@ -431,19 +431,26 @@ class YouTube:
                 info("OpenRouter API key not set, skipping.")
             return None
         
-        url = "https://openrouter.ai/api/v1/models?output_modalities=image"
+        url = "https://openrouter.ai/api/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://openrouter.ai",  # Required
-            "X-Title": "MoneyPrinterV2",  # Optional
+            "HTTP-Referer": "https://openrouter.ai"  # Required
+            #"X-Title": "PrinterV2",  # Optional
         }
         data = {
             "model": get_openrouter_image_model(),
-            "prompt": prompt,
-            "n": 1,
-            "size": "1024x1024",  # Adjust for shorts
-            "response_format": "b64_json",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "modalities": ["image", "text"],
+            "image_config": {
+                "aspect_ratio": "9:16",
+                "image_size": "1K"
+            }
         }
         
         try:
