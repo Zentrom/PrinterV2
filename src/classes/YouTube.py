@@ -342,21 +342,15 @@ class YouTube:
 
         endpoint = f"{base_url}/v1/images/generations"
         payload = {
-            "prompt": "",
-            "model": "flux",
-            "n": 1,
-            "size": "1024x1024",
-            "quality": "medium",
-            "response_format": "b64_json",
-            "user": "",
-            "image": "",
-            "safe": ""
+            "prompt": prompt,
+            "model": get_pollinations_model(),
+            "response_format": "b64_json"
         }
 
         try:
             response = requests.post(
                 endpoint,
-                headers={"Content-Type": "application/json", f"Authorization: Bearer {api_key}"},
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
                 json=payload,
                 timeout=300,
             )
@@ -581,7 +575,7 @@ class YouTube:
             for image_path in self.images:
                 clip = ImageClip(image_path)
                 clip.duration = req_dur
-                clip = clip.set_fps(30)
+                clip = clip.with_fps(30)
 
                 # Not all images are same size,
                 # so we need to resize them
@@ -607,7 +601,7 @@ class YouTube:
                             y_center=clip.h / 2,
                         )
                     ])
-                clip = clip.resize((1080, 1920))
+                clip = clip.resized((1080, 1920))
 
                 # FX (Fade In)
                 # clip = clip.fadein(2)
@@ -616,7 +610,7 @@ class YouTube:
                 tot_dur += clip.duration
 
         final_clip = concatenate_videoclips(clips)
-        final_clip = final_clip.set_fps(30)
+        final_clip = final_clip.with_fps(30)
         random_song = choose_random_song()
 
         subtitles = None
@@ -628,11 +622,11 @@ class YouTube:
         except Exception as e:
             warning(f"Failed to generate subtitles, continuing without subtitles: {e}")
 
-        random_song_clip = AudioFileClip(random_song).set_fps(44100)
+        random_song_clip = AudioFileClip(random_song).with_fps(44100)
 
         # Turn down volume
         random_song_clip = random_song_clip.fx(afx.volumex, 0.1)
-        comp_audio = CompositeAudioClip([tts_clip.set_fps(44100), random_song_clip])
+        comp_audio = CompositeAudioClip([tts_clip.with_fps(44100), random_song_clip])
 
         final_clip = final_clip.set_audio(comp_audio)
         final_clip = final_clip.set_duration(tts_clip.duration)

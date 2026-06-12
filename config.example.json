@@ -7,7 +7,7 @@
   "twitter_language": "English",
   "pollinations_api_base_url": "https://gen.pollinations.ai",
   "pollinations_api_key": "",
-  "pollinations_model": "gemini-3.1-flash-image",
+  "pollinations_model": "flux",
   "pollinations_aspect_ratio": "9:16",
   "threads": 4,
   "zip_url": "",
