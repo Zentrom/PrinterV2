@@ -448,7 +448,7 @@ if __name__ == "__main__":
     assert_folder_structure()
 
     # Remove temporary files
-    rem_temp_files()
+    # rem_temp_files()
 
     # Fetch MP3 Files
     fetch_songs()

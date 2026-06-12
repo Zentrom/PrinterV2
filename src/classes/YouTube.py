@@ -149,7 +149,8 @@ class YouTube:
             error("Failed to generate Topic.")
 
         self.subject = completion
-
+        if get_verbose():
+            info(f" => Generated Topic: {completion}")
         return completion
 
     def generate_script(self) -> str:
@@ -197,6 +198,8 @@ class YouTube:
             return self.generate_script()
 
         self.script = completion
+        if get_verbose():
+            info(f" => Generated Script: {completion}")
 
         return completion
 
@@ -232,6 +235,8 @@ class YouTube:
             image_prompts (List[str]): Generated List of image prompts.
         """
         n_prompts = len(self.script) / 3
+        if n_prompts > 10:
+            n_prompts = 10
 
         prompt = f"""
         Generate {n_prompts} Image Prompts for AI Image Generation,
@@ -548,7 +553,7 @@ class YouTube:
         Returns:
             path (str): The path to the generated MP4 File.
         """
-        combined_image_path = os.path.join(ROOT_DIR, ".mp", str(uuid4()) + ".mp4")
+        combined_image_path = os.path.join(ROOT_DIR, ".output", str(uuid4()) + ".mp4")
         threads = get_threads()
         tts_clip = AudioFileClip(self.tts_path)
         max_duration = tts_clip.duration
@@ -625,11 +630,11 @@ class YouTube:
         random_song_clip = AudioFileClip(random_song).with_fps(44100)
 
         # Turn down volume
-        random_song_clip = random_song_clip.fx(afx.volumex, 0.1)
+        #random_song_clip = random_song_clip.fx(afx.volumex, 0.1)
         comp_audio = CompositeAudioClip([tts_clip.with_fps(44100), random_song_clip])
 
-        final_clip = final_clip.set_audio(comp_audio)
-        final_clip = final_clip.set_duration(tts_clip.duration)
+        final_clip = final_clip.with_audio(comp_audio)
+        final_clip = final_clip.with_duration(tts_clip.duration)
 
         if subtitles is not None:
             final_clip = CompositeVideoClip([final_clip, subtitles])

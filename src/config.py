@@ -19,6 +19,10 @@ def assert_folder_structure() -> None:
         if get_verbose():
             print(colored(f"=> Creating .mp folder at {os.path.join(ROOT_DIR, '.mp')}", "green"))
         os.makedirs(os.path.join(ROOT_DIR, ".mp"))
+    if not os.path.exists(os.path.join(ROOT_DIR, ".output")):
+        if get_verbose():
+            print(colored(f"=> Creating .output folder at {os.path.join(ROOT_DIR, '.output')}", "green"))
+        os.makedirs(os.path.join(ROOT_DIR, ".output"))
 
 def get_first_time_running() -> bool:
     """
