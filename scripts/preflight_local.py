@@ -82,17 +82,17 @@ def main() -> int:
             warn(f"Could not validate Ollama model list: {exc}")
 
     # Nano Banana 2 (image generation)
-    api_key = cfg.get("nanobanana2_api_key", "") or os.environ.get("GEMINI_API_KEY", "")
+    api_key = cfg.get("pollinations_api_key", "") or os.environ.get("POLLINATIONS_API_KEY", "")
     nb2_base = str(
         cfg.get(
-            "nanobanana2_api_base_url",
+            "pollinations_api_base_url",
             "https://generativelanguage.googleapis.com/v1beta",
         )
     ).rstrip("/")
     if api_key:
-        ok("nanobanana2_api_key is set")
+        ok("pollinations_api_key is set")
     else:
-        fail("nanobanana2_api_key is empty (and GEMINI_API_KEY is not set)")
+        fail("pollinations_api_key is empty (and POLLINATIONS_API_KEY is not set)")
         failures += 1
 
     reachable, detail = check_url(nb2_base, timeout=8)

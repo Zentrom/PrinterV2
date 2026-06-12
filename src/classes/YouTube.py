@@ -319,7 +319,7 @@ class YouTube:
         self.images.append(image_path)
         return image_path
 
-    def generate_image_nanobanana2(self, prompt: str) -> str:
+    def generate_image_pollinations(self, prompt: str) -> str:
         """
         Generates an AI Image using Nano Banana 2 API (Gemini image API).
 
@@ -329,55 +329,50 @@ class YouTube:
         Returns:
             path (str): The path to the generated image.
         """
-        print(f"Generating Image using Nano Banana 2 API: {prompt}")
+        print(f"Generating Image using Pollinations API: {prompt}")
 
-        api_key = get_nanobanana2_api_key()
+        api_key = get_pollinations_api_key()
         if not api_key:
-            error("nanobanana2_api_key is not configured.")
+            error("pollinations_api_key is not configured.")
             return None
 
-        base_url = get_nanobanana2_api_base_url().rstrip("/")
-        model = get_nanobanana2_model()
-        aspect_ratio = get_nanobanana2_aspect_ratio()
+        base_url = get_pollinations_api_base_url().rstrip("/")
+        model = get_pollinations_model()
+        aspect_ratio = get_pollinations_aspect_ratio()
 
-        endpoint = f"{base_url}/models/{model}:generateContent"
+        endpoint = f"{base_url}/v1/images/generations"
         payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "responseModalities": ["IMAGE"],
-                "imageConfig": {"aspectRatio": aspect_ratio},
-            },
+            "prompt": "",
+            "model": "flux",
+            "n": 1,
+            "size": "1024x1024",
+            "quality": "medium",
+            "response_format": "b64_json",
+            "user": "",
+            "image": "",
+            "safe": ""
         }
 
         try:
             response = requests.post(
                 endpoint,
-                headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+                headers={"Content-Type": "application/json", f"Authorization: Bearer {api_key}"},
                 json=payload,
                 timeout=300,
             )
             response.raise_for_status()
             body = response.json()
 
-            candidates = body.get("candidates", [])
-            for candidate in candidates:
-                content = candidate.get("content", {})
-                for part in content.get("parts", []):
-                    inline_data = part.get("inlineData") or part.get("inline_data")
-                    if not inline_data:
-                        continue
-                    data = inline_data.get("data")
-                    mime_type = inline_data.get("mimeType") or inline_data.get("mime_type", "")
-                    if data and str(mime_type).startswith("image/"):
-                        image_bytes = base64.b64decode(data)
-                        return self._persist_image(image_bytes, "Nano Banana 2 API")
+            data = body["data"][0]["b64_json"]
+            image_bytes = base64.b64decode(data)
+            return self._persist_image(image_bytes, "Pollinations")
 
             if get_verbose():
-                warning(f"Nano Banana 2 did not return an image payload. Response: {body}")
+                warning(f"Pollinations did not return an image payload. Response: {body}")
             return None
         except Exception as e:
             if get_verbose():
-                warning(f"Failed to generate image with Nano Banana 2 API: {str(e)}")
+                warning(f"Failed to generate image with Pollinations API: {str(e)}")
             return None
 
     def generate_image(self, prompt: str) -> str:
@@ -390,7 +385,7 @@ class YouTube:
         Returns:
             path (str): The path to the generated image.
         """
-        return self.generate_image_nanobanana2(prompt)
+        return self.generate_image_pollinations(prompt)
 
     def generate_script_to_speech(self, tts_instance: TTS) -> str:
         """

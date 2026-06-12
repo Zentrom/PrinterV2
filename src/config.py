@@ -99,7 +99,7 @@ def get_twitter_language() -> str:
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
         return json.load(file)["twitter_language"]
 
-def get_nanobanana2_api_base_url() -> str:
+def get_pollinations_api_base_url() -> str:
     """
     Gets the Nano Banana 2 (Gemini image) API base URL.
 
@@ -108,11 +108,11 @@ def get_nanobanana2_api_base_url() -> str:
     """
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
         return json.load(file).get(
-            "nanobanana2_api_base_url",
+            "pollinations_api_base_url",
             "https://generativelanguage.googleapis.com/v1beta",
         )
 
-def get_nanobanana2_api_key() -> str:
+def get_pollinations_api_key() -> str:
     """
     Gets the Nano Banana 2 API key.
 
@@ -120,10 +120,10 @@ def get_nanobanana2_api_key() -> str:
         key (str): API key
     """
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
-        configured = json.load(file).get("nanobanana2_api_key", "")
-        return configured or os.environ.get("GEMINI_API_KEY", "")
+        configured = json.load(file).get("pollinations_api_key", "")
+        return configured or os.environ.get("POLLINATIONS_API_KEY", "")
 
-def get_nanobanana2_model() -> str:
+def get_pollinations_model() -> str:
     """
     Gets the Nano Banana 2 model name.
 
@@ -131,9 +131,9 @@ def get_nanobanana2_model() -> str:
         model (str): Model name
     """
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
-        return json.load(file).get("nanobanana2_model", "gemini-3.1-flash-image-preview")
+        return json.load(file).get("pollinations_model", "gemini-3.1-flash-image-preview")
 
-def get_nanobanana2_aspect_ratio() -> str:
+def get_pollinations_aspect_ratio() -> str:
     """
     Gets the aspect ratio for Nano Banana 2 image generation.
 
@@ -141,7 +141,7 @@ def get_nanobanana2_aspect_ratio() -> str:
         ratio (str): Aspect ratio
     """
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
-        return json.load(file).get("nanobanana2_aspect_ratio", "9:16")
+        return json.load(file).get("pollinations_aspect_ratio", "9:16")
 
 def get_threads() -> int:
     """

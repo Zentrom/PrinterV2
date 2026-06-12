@@ -1,7 +1,9 @@
-- setupLocal.sh
-- setupLocal2.sh
+- ./setupLocal.sh
+- ./setupLocal2.sh
 - ./scripts/setup_local.sh
-
+- source venv/bin/activate
+- cd venv
+- python3 ../src/main.py
 
 # MoneyPrinter V2
 
