@@ -22,6 +22,7 @@ sudo apt install -y \
     libpango-1.0-0 \
     libcairo2 \
     libatk1.0-0 \
-    libatk-bridge2.0-0
+    libatk-bridge2.0-0 \
+    imagemagick
 
 firefox --version

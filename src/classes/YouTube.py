@@ -349,7 +349,8 @@ class YouTube:
         payload = {
             "prompt": prompt,
             "model": get_pollinations_model(),
-            "response_format": "b64_json"
+            "response_format": "b64_json",
+            "size": "768×1344"
         }
 
         try:
@@ -584,29 +585,29 @@ class YouTube:
 
                 # Not all images are same size,
                 # so we need to resize them
-                if round((clip.w / clip.h), 4) < 0.5625:
-                    if get_verbose():
-                        info(f" => Resizing Image: {image_path} to 1080x1920")
-                    clip = clip.with_effects([
-                        Crop(
-                            width=clip.w,
-                            height=round(clip.w / 0.5625),
-                            x_center=clip.w / 2,
-                            y_center=clip.h / 2,
-                        )
-                    ])
-                else:
-                    if get_verbose():
-                        info(f" => Resizing Image: {image_path} to 1920x1080")
-                    clip = clip.with_effects([
-                        Crop(
-                            width=round(0.5625 * clip.h),
-                            height=clip.h,
-                            x_center=clip.w / 2,
-                            y_center=clip.h / 2,
-                        )
-                    ])
-                clip = clip.resized((1080, 1920))
+                #if round((clip.w / clip.h), 4) < 0.5625:
+                #    if get_verbose():
+                #        info(f" => Resizing Image: {image_path} to 1080x1920")
+                #    clip = clip.with_effects([
+                #        Crop(
+                #            width=clip.w,
+                #            height=round(clip.w / 0.5625),
+                #            x_center=clip.w / 2,
+                #            y_center=clip.h / 2,
+                #        )
+                #    ])
+                #else:
+                #    if get_verbose():
+                #        info(f" => Resizing Image: {image_path} to 1920x1080")
+                #    clip = clip.with_effects([
+                #        Crop(
+                #            width=round(0.5625 * clip.h),
+                #            height=clip.h,
+                #            x_center=clip.w / 2,
+                #            y_center=clip.h / 2,
+                #        )
+                #    ])
+                #clip = clip.resized((768, 1344))
 
                 # FX (Fade In)
                 # clip = clip.fadein(2)
@@ -630,7 +631,7 @@ class YouTube:
         random_song_clip = AudioFileClip(random_song).with_fps(44100)
 
         # Turn down volume
-        #random_song_clip = random_song_clip.fx(afx.volumex, 0.1)
+        random_song_clip = random_song_clip.with_volume_scaled(0.1)
         comp_audio = CompositeAudioClip([tts_clip.with_fps(44100), random_song_clip])
 
         final_clip = final_clip.with_audio(comp_audio)

@@ -3,7 +3,7 @@
   "firefox_profile": "",
   "headless": true,
   "ollama_base_url": "http://127.0.0.1:11434",
-  "ollama_model": "",
+  "ollama_model": "llama3.2:1b",
   "twitter_language": "English",
   "pollinations_api_base_url": "https://gen.pollinations.ai",
   "pollinations_api_key": "",
@@ -30,7 +30,7 @@
   "assembly_ai_api_key": "",
   "tts_voice": "Jasper",
   "font": "bold_font.ttf",
-  "imagemagick_path": "Path to magick.exe or on linux/macOS just /usr/bin/convert",
+  "imagemagick_path": "/usr/bin/convert",
   "script_sentence_length": 2,
   "post_bridge": {
     "enabled": false,
