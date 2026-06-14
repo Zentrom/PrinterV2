@@ -3,11 +3,75 @@ import random
 import zipfile
 import requests
 import platform
+import shutil
+from urllib.parse import urlparse
 
 from status import *
 from config import *
 
 DEFAULT_SONG_ARCHIVE_URLS = []
+SAFE_AUDIO_EXTENSIONS = (".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac")
+
+
+def is_song_archive_url(archive_location: str) -> bool:
+    """
+    Checks whether a configured songs archive location is a remote URL.
+
+    Args:
+        archive_location (str): The configured archive location.
+
+    Returns:
+        bool: True if the archive location is an HTTP or HTTPS URL.
+    """
+    parsed_location = urlparse(archive_location)
+    return parsed_location.scheme in ("http", "https")
+
+
+def resolve_song_archive_path(archive_path: str) -> str:
+    """
+    Resolves a configured songs archive path.
+
+    Args:
+        archive_path (str): An absolute path, or a path relative to the project root.
+
+    Returns:
+        str: The resolved path to the archive.
+    """
+    if os.path.isabs(archive_path):
+        return archive_path
+    return os.path.join(ROOT_DIR, archive_path)
+
+
+def extract_songs_archive(archive_path: str, songs_dir: str) -> int:
+    """
+    Extracts audio files from a songs archive into the Songs directory.
+
+    Args:
+        archive_path (str): The path to the zip archive.
+        songs_dir (str): The directory to extract songs into.
+
+    Returns:
+        int: The number of songs extracted.
+    """
+    extracted_count = 0
+
+    with zipfile.ZipFile(archive_path, "r") as zf:
+        for member in zf.infolist():
+            basename = os.path.basename(member.filename)
+            if member.is_dir() or not basename:
+                continue
+            if not basename.lower().endswith(SAFE_AUDIO_EXTENSIONS):
+                warning(f"Skipping non-audio file in archive: {member.filename}")
+                continue
+
+            destination_path = os.path.join(songs_dir, basename)
+            with zf.open(member, "r") as source, open(
+                destination_path, "wb"
+            ) as destination:
+                shutil.copyfileobj(source, destination)
+            extracted_count += 1
+
+    return extracted_count
 
 
 def close_running_selenium_instances() -> None:
@@ -64,7 +128,7 @@ def rem_temp_files() -> None:
 
 def fetch_songs() -> None:
     """
-    Downloads songs into songs/ directory to use with geneated videos.
+    Extracts songs into Songs/ directory to use with generated videos.
 
     Returns:
         None
@@ -73,11 +137,14 @@ def fetch_songs() -> None:
         info(f" => Fetching songs...")
 
         files_dir = os.path.join(ROOT_DIR, "Songs")
+        configured_archive_path = get_zip_url().strip()
+        configured_archive_is_url = is_song_archive_url(configured_archive_path)
+
         if not os.path.exists(files_dir):
             os.mkdir(files_dir)
             if get_verbose():
                 info(f" => Created directory: {files_dir}")
-        else:
+        elif not configured_archive_path or configured_archive_is_url:
             existing_audio_files = [
                 name
                 for name in os.listdir(files_dir)
@@ -87,51 +154,63 @@ def fetch_songs() -> None:
             if len(existing_audio_files) > 0:
                 return
 
-        configured_url = get_zip_url().strip()
-        download_urls = [configured_url] if configured_url else []
-        download_urls.extend(DEFAULT_SONG_ARCHIVE_URLS)
-
         archive_path = os.path.join(files_dir, "songs.zip")
-        downloaded = False
+        extracted = False
+        downloaded_archive = False
 
-        for download_url in download_urls:
+        resolved_archive_path = ""
+        if configured_archive_path and not configured_archive_is_url:
+            resolved_archive_path = resolve_song_archive_path(configured_archive_path)
+
+        if resolved_archive_path and os.path.isfile(resolved_archive_path):
+            extracted_count = extract_songs_archive(resolved_archive_path, files_dir)
+            if extracted_count == 0:
+                raise RuntimeError(
+                    f"No supported audio files found in archive: {resolved_archive_path}"
+                )
+            extracted = True
+        elif resolved_archive_path:
+            raise FileNotFoundError(f"Songs archive not found: {resolved_archive_path}")
+        else:
+            download_urls = []
+            if configured_archive_path:
+                download_urls.append(configured_archive_path)
+            download_urls.extend(DEFAULT_SONG_ARCHIVE_URLS)
+
+        for download_url in [] if extracted else download_urls:
             try:
                 response = requests.get(download_url, timeout=60)
                 response.raise_for_status()
 
                 with open(archive_path, "wb") as file:
                     file.write(response.content)
+                downloaded_archive = True
 
-                SAFE_EXTENSIONS = (".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac")
-                with zipfile.ZipFile(archive_path, "r") as zf:
-                    for member in zf.namelist():
-                        basename = os.path.basename(member)
-                        if not basename or not basename.lower().endswith(SAFE_EXTENSIONS):
-                            warning(f"Skipping non-audio file in archive: {member}")
-                            continue
-                        if ".." in member or member.startswith("/"):
-                            warning(f"Skipping suspicious path in archive: {member}")
-                            continue
-                        zf.extract(member, files_dir)
+                extracted_count = extract_songs_archive(archive_path, files_dir)
+                if extracted_count == 0:
+                    raise RuntimeError(
+                        f"No supported audio files found in archive: {download_url}"
+                    )
 
-                downloaded = True
+                extracted = True
                 break
             except Exception as err:
                 warning(f"Failed to fetch songs from {download_url}: {err}")
 
-        if not downloaded:
+        if not extracted:
             raise RuntimeError(
-                "Could not download a valid songs archive from any configured URL"
+                "Could not extract a valid songs archive from the configured path or URL"
             )
 
-        # Remove the zip file
-        if os.path.exists(archive_path):
+        # Remove only the temporary archive downloaded into Songs/.
+        if downloaded_archive and os.path.exists(archive_path):
             os.remove(archive_path)
 
-        success(" => Downloaded Songs to ../Songs.")
+        success(" => Extracted Songs to ../Songs.")
 
     except Exception as e:
         error(f"Error occurred while fetching songs: {str(e)}")
+        raise
 
 
 def choose_random_song() -> str:
@@ -147,7 +226,7 @@ def choose_random_song() -> str:
             name
             for name in os.listdir(songs_dir)
             if os.path.isfile(os.path.join(songs_dir, name))
-            and name.lower().endswith((".mp3", ".wav", ".m4a", ".aac", ".ogg"))
+            and name.lower().endswith(SAFE_AUDIO_EXTENSIONS)
         ]
         if len(songs) == 0:
             raise RuntimeError("No audio files found in Songs directory")

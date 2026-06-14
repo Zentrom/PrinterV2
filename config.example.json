@@ -10,7 +10,7 @@
   "pollinations_model": "flux",
   "pollinations_aspect_ratio": "9:16",
   "threads": 4,
-  "zip_url": "",
+  "zip_url": "songs.zip",
   "is_for_kids": false,
   "google_maps_scraper": "https://github.com/gosom/google-maps-scraper/archive/refs/tags/v0.9.7.zip",
   "email": {

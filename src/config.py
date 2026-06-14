@@ -159,10 +159,10 @@ def get_threads() -> int:
     
 def get_zip_url() -> str:
     """
-    Gets the URL to the zip file containing the songs.
+    Gets the path or URL to the zip file containing the songs.
 
     Returns:
-        url (str): The URL to the zip file
+        url (str): The path or URL to the zip file
     """
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
         return json.load(file)["zip_url"]

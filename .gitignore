@@ -3,6 +3,7 @@ config.json
 .mp/
 .output/
 venv/
+Songs/
 google-maps-scraper-0.9.7/
 niche.txt
 *.exe
