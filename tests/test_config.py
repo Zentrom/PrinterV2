@@ -80,5 +80,46 @@ class PostBridgeConfigTests(unittest.TestCase):
         self.assertFalse(post_bridge_config["enabled"])
 
 
+class SubtitlePositionConfigTests(unittest.TestCase):
+    def write_config(self, directory: str, payload: dict) -> None:
+        with open(os.path.join(directory, "config.json"), "w", encoding="utf-8") as handle:
+            json.dump(payload, handle)
+
+    def test_subtitles_position_reads_object_values(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            self.write_config(
+                temp_dir,
+                {
+                    "subtitles_position": {
+                        "horizontal": "left",
+                        "vertical": "top",
+                    },
+                },
+            )
+
+            with patch.object(config, "ROOT_DIR", temp_dir):
+                subtitles_position = config.get_subtitles_position()
+
+        self.assertEqual(subtitles_position, ("left", "top"))
+
+    def test_subtitles_position_defaults_when_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            self.write_config(temp_dir, {})
+
+            with patch.object(config, "ROOT_DIR", temp_dir):
+                subtitles_position = config.get_subtitles_position()
+
+        self.assertEqual(subtitles_position, ("center", "center"))
+
+    def test_subtitles_position_accepts_string_value(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            self.write_config(temp_dir, {"subtitles_position": "right,bottom"})
+
+            with patch.object(config, "ROOT_DIR", temp_dir):
+                subtitles_position = config.get_subtitles_position()
+
+        self.assertEqual(subtitles_position, ("right", "bottom"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -156,7 +156,46 @@ def get_threads() -> int:
     """
     with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
         return json.load(file)["threads"]
-    
+
+def normalize_subtitles_position(position) -> tuple[str, str]:
+    """
+    Normalizes subtitle position config to (horizontal, vertical).
+
+    Args:
+        position: Subtitle position value from config.json.
+
+    Returns:
+        tuple[str, str]: The horizontal and vertical subtitle position.
+    """
+    if isinstance(position, dict):
+        horizontal = position.get("horizontal", position.get("x", "center"))
+        vertical = position.get("vertical", position.get("y", "center"))
+        return (str(horizontal).strip(), str(vertical).strip())
+
+    if isinstance(position, (list, tuple)) and len(position) >= 2:
+        return (str(position[0]).strip(), str(position[1]).strip())
+
+    if isinstance(position, str):
+        parts = [part.strip() for part in position.split(",") if part.strip()]
+        if len(parts) >= 2:
+            return (parts[0], parts[1])
+        if len(parts) == 1:
+            return (parts[0], "center")
+
+    return ("center", "center")
+
+def get_subtitles_position() -> tuple[str, str]:
+    """
+    Returns (horizontal, vertical) subtitle position from config.json.
+    Accepts a dict {"horizontal":..,"vertical":..}, a list/tuple ["h","v"],
+    or a string "h,v".
+    Defaults to ("center", "center").
+    """
+    with open(os.path.join(ROOT_DIR, "config.json"), "r") as file:
+        cfg = json.load(file)
+
+    return normalize_subtitles_position(cfg.get("subtitles_position"))
+
 def get_zip_url() -> str:
     """
     Gets the path or URL to the zip file containing the songs.

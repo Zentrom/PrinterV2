@@ -15,6 +15,7 @@ All your configurations will be in a file in the root directory, called `config.
 - `nanobanana2_model`: `string` - Nano Banana 2 model name (default: `gemini-3.1-flash-image-preview`).
 - `nanobanana2_aspect_ratio`: `string` - Aspect ratio for generated images (default: `9:16`).
 - `threads`: `number` - The amount of threads that will be used to execute operations, e.g. writing to a file using MoviePy.
+- `subtitles_position`: `object` - Subtitle position used by MoviePy. Set `horizontal` to `left`, `center`, or `right`; set `vertical` to `top`, `center`, or `bottom`.
 - `is_for_kids`: `boolean` - If `true`, the application will upload the video to YouTube Shorts as a video for kids.
 - `google_maps_scraper`: `string` - The URL to the Google Maps scraper. This will be used to scrape Google Maps for local businesses. It is recommended to use the default value.
 - `zip_url`: `string` - The file path to the ZIP archive containing songs for the YouTube Shorts Automater. Relative paths are resolved from the project root.
@@ -60,6 +61,10 @@ All your configurations will be in a file in the root directory, called `config.
   "nanobanana2_model": "gemini-3.1-flash-image-preview",
   "nanobanana2_aspect_ratio": "9:16",
   "threads": 2,
+  "subtitles_position": {
+    "horizontal": "left",
+    "vertical": "top"
+  },
   "zip_url": "songs.zip",
   "is_for_kids": false,
   "google_maps_scraper": "https://github.com/gosom/google-maps-scraper/archive/refs/tags/v0.9.7.zip",

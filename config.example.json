@@ -10,6 +10,10 @@
   "pollinations_model": "flux",
   "pollinations_aspect_ratio": "9:16",
   "threads": 4,
+  "subtitles_position": {
+    "horizontal": "left",
+    "vertical": "top"
+  },
   "zip_url": "songs.zip",
   "is_for_kids": false,
   "google_maps_scraper": "https://github.com/gosom/google-maps-scraper/archive/refs/tags/v0.9.7.zip",
@@ -28,7 +32,7 @@
   "whisper_device": "auto",
   "whisper_compute_type": "int8",
   "assembly_ai_api_key": "",
-  "tts_voice": "Jasper",
+  "tts_voice": "Bruno",
   "font": "bold_font.ttf",
   "imagemagick_path": "/usr/bin/convert",
   "script_sentence_length": 2,

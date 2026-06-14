@@ -560,18 +560,6 @@ class YouTube:
         max_duration = tts_clip.duration
         req_dur = max_duration / len(self.images)
 
-        # Make a generator that returns a TextClip when called with consecutive
-        generator = lambda txt: TextClip(
-            text=txt,
-            font=os.path.join(get_fonts_dir(), get_font()),
-            font_size=100,
-            color="#FFFF00",
-            stroke_color="black",
-            stroke_width=5,
-            size=(1080, 1920),
-            method="caption",
-        )
-
         print(colored("[+] Combining images...", "blue"))
 
         clips = []
@@ -623,8 +611,23 @@ class YouTube:
         try:
             subtitles_path = self.generate_subtitles(self.tts_path)
             equalize_subtitles(subtitles_path, 10)
+            hpos, vpos = get_subtitles_position()  # horizontal, vertical
+            text_align = hpos if hpos in ("left", "center", "right") else "center"
+            generator = lambda txt: TextClip(
+                text=txt,
+                font=os.path.join(get_fonts_dir(), get_font()),
+                font_size=100,
+                color="#FFFF00",
+                stroke_color="black",
+                stroke_width=5,
+                size=(final_clip.w, None),
+                method="caption",
+                text_align=text_align,
+                horizontal_align=text_align,
+                vertical_align="top",
+            )
             subtitles = SubtitlesClip(subtitles_path, make_textclip=generator)
-            subtitles = subtitles.with_position(("center", "center"))
+            subtitles = subtitles.with_position((hpos, vpos))
         except Exception as e:
             warning(f"Failed to generate subtitles, continuing without subtitles: {e}")
 
