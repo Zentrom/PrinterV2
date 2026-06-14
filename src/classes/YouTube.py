@@ -616,8 +616,8 @@ class YouTube:
             generator = lambda txt: TextClip(
                 text=txt,
                 font=os.path.join(get_fonts_dir(), get_font()),
-                font_size=100,
-                color="#FFFF00",
+                font_size=80,
+                color="#00FF00",
                 stroke_color="black",
                 stroke_width=5,
                 size=(final_clip.w, None),
@@ -646,6 +646,8 @@ class YouTube:
         final_clip.write_videofile(combined_image_path, threads=threads)
 
         success(f'Wrote Video to "{combined_image_path}"')
+
+        self.images = []
 
         return combined_image_path
 

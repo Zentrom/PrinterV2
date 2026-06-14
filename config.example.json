@@ -11,7 +11,7 @@
   "pollinations_aspect_ratio": "9:16",
   "threads": 4,
   "subtitles_position": {
-    "horizontal": "left",
+    "horizontal": "center",
     "vertical": "top"
   },
   "zip_url": "songs.zip",
