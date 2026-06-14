@@ -616,8 +616,8 @@ class YouTube:
             generator = lambda txt: TextClip(
                 text=txt,
                 font=os.path.join(get_fonts_dir(), get_font()),
-                font_size=100,
-                color="#FFFF00",
+                font_size=80,
+                color="#FF0000",
                 stroke_color="black",
                 stroke_width=5,
                 size=(final_clip.w, None),
