@@ -562,9 +562,9 @@ class YouTube:
 
         # Make a generator that returns a TextClip when called with consecutive
         generator = lambda txt: TextClip(
-            txt,
+            text=txt,
             font=os.path.join(get_fonts_dir(), get_font()),
-            fontsize=100,
+            font_size=100,
             color="#FFFF00",
             stroke_color="black",
             stroke_width=5,
@@ -623,8 +623,8 @@ class YouTube:
         try:
             subtitles_path = self.generate_subtitles(self.tts_path)
             equalize_subtitles(subtitles_path, 10)
-            subtitles = SubtitlesClip(subtitles_path, generator)
-            subtitles.set_pos(("center", "center"))
+            subtitles = SubtitlesClip(subtitles_path, make_textclip=generator)
+            subtitles = subtitles.with_position(("center", "center"))
         except Exception as e:
             warning(f"Failed to generate subtitles, continuing without subtitles: {e}")
 

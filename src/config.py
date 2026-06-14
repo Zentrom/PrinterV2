@@ -298,7 +298,16 @@ def equalize_subtitles(srt_path: str, max_chars: int = 10) -> None:
     Returns:
         None
     """
-    srt_equalizer.equalize_srt_file(srt_path, srt_path, max_chars)
+    abs_srt_path = os.path.abspath(srt_path)
+    srt_dir = os.path.dirname(abs_srt_path) or "."
+    srt_filename = os.path.basename(abs_srt_path)
+
+    previous_cwd = os.getcwd()
+    try:
+        os.chdir(srt_dir)
+        srt_equalizer.equalize_srt_file(srt_filename, srt_filename, max_chars)
+    finally:
+        os.chdir(previous_cwd)
     
 def get_font() -> str:
     """
